@@ -1,0 +1,9 @@
+[project]
+name = "comfyui-qalign"
+version = "0.5.0"
+description = "Reference-guided image alignment custom node for ComfyUI"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+
+[tool.ruff]
+line-length = 100
