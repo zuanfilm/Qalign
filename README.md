@@ -1,4 +1,4 @@
-# ComfyUI-Qalign
+# Qalign
 
 **QAlign** is a ComfyUI custom node for geometrically aligning an
 enhanced or generated image to a reference image while preserving the
