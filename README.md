@@ -76,7 +76,7 @@ used to estimate geometry; it is not composited into the output.
     ```text
     ComfyUI/
     └── custom_nodes/
-        └── ComfyUI-Qalign/
+        └── Qalign/
     ```
 
 2.  Restart ComfyUI and search the node menu for **QAlign**.
