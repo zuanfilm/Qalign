@@ -70,7 +70,7 @@ used to estimate geometry; it is not composited into the output.
 
 ## Installation
 
-1.  Download or clone this repository into your ComfyUI custom-nodes
+1.  Use ComfyUI Manager or Download or git clone this repository into your ComfyUI custom-nodes
     directory, for example:
 
     ```text
