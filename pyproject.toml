@@ -3,7 +3,7 @@ requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "comfyui-qalign"
+name = "qalign"
 version = "0.5.0"
 description = "Reference-guided image alignment custom node for ComfyUI"
 requires-python = ">=3.10"
