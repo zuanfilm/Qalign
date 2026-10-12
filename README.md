@@ -19,6 +19,8 @@ subject.
 -   **Version documented here:** `0.5.0`
 -   **License:** Apache-2.0
 
+-   ![QAlign comparison: reference, source, and aligned result](https://raw.githubusercontent.com/zuanfilm/Qalign/workflow/workflows/Qwen_i_2.1-Qalign-Compare_00036_.png)
+
 ## Contents
 
 -   [What QAlign does](#what-qalign-does)
