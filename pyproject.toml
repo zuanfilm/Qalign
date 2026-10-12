@@ -1,9 +1,24 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "comfyui-qalign"
 version = "0.5.0"
 description = "Reference-guided image alignment custom node for ComfyUI"
 requires-python = ">=3.10"
-license = { text = "Apache-2.0" }
+license = "Apache-2.0"
+
+[project.urls]
+Repository = "https://github.com/zuanfilm/Qalign"
+
+[tool.comfy]
+PublisherId = "zuanfilm"
+DisplayName = "QAlign"
+
+[tool.setuptools.packages.find]
+include = ["qalign*"]
+exclude = ["workflows*"]
 
 [tool.ruff]
 line-length = 100
