@@ -15,7 +15,7 @@ subject.
 
 -   **Node display name:** `QAlign`
 -   **Node class:** `QAlignImageAlign`
--   **Package/repository name:** `ComfyUI-Qalign`
+-   **Package/repository name:** `Qalign`
 -   **Version documented here:** `0.5.0`
 -   **License:** Apache-2.0
 
