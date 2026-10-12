@@ -35,8 +35,6 @@ subject.
 -   [Technical notes](#technical-notes)
 -   [License](#license)
 
-![QAlign comparison: reference, source, and aligned result](https://raw.githubusercontent.com/zuanfilm/Qalign/workflow/workflows/Qwen_i_2.1-Qalign-Compare_00087_.png)
-
 ## What QAlign does
 
 QAlign is designed for workflows in which an image model changes an
@@ -69,8 +67,6 @@ used to estimate geometry; it is not composited into the output.
     reference.
 -   It cannot reliably recover geometry when the images share too little
     visual structure.
-
-    ![QAlign comparison: reference, source, and aligned result](https://raw.githubusercontent.com/zuanfilm/Qalign/workflow/workflows/Qwen_i_2.1-Qalign-Compare_00088_.png)
 
 ## Installation
 
