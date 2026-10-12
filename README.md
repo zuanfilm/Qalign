@@ -77,16 +77,7 @@ used to estimate geometry; it is not composited into the output.
         └── ComfyUI-Qalign/
     ```
 
-2.  QAlign requires Python packages already commonly used by ComfyUI,
-    including NumPy and PyTorch, plus **OpenCV** (`cv2`). If OpenCV is
-    missing, install `opencv-python` into the Python environment used by
-    your ComfyUI installation.
-
-    For a portable Windows installation, use the Python
-    executable/environment shipped with that ComfyUI installation rather
-    than an unrelated system Python.
-
-3.  Restart ComfyUI and search the node menu for **QAlign**.
+2.  Restart ComfyUI and search the node menu for **QAlign**.
 
 No model weights, API credentials, or external services are required.
 
