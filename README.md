@@ -19,7 +19,7 @@ subject.
 -   **Version documented here:** `0.5.0`
 -   **License:** Apache-2.0
 
-![QAlign comparison: reference, source, and aligned result](https://raw.githubusercontent.com/zuanfilm/Qalign/workflow/workflows/Qwen_i_2.1-Qalign-Compare_00036_.png)
+-   ![QAlign comparison: reference, source, and aligned result](https://raw.githubusercontent.com/zuanfilm/Qalign/workflow/workflows/Qwen_i_2.1-Qalign-Compare_00036_.png)
 
 ## Contents
 
@@ -73,7 +73,7 @@ used to estimate geometry; it is not composited into the output.
 1.  Download or clone this repository into your ComfyUI custom-nodes
     directory, for example:
 
-    ```text
+    ``` text
     ComfyUI/
     └── custom_nodes/
         └── ComfyUI-Qalign/
@@ -87,11 +87,31 @@ No model weights, API credentials, or external services are required.
 
 ### Inputs
 
-| Input | Type | Description |
-|---|---|---|
-| `reference` | IMAGE | The geometric reference. The source is aligned to this image's coordinate system. |
-| `source` | IMAGE | The image to transform. Its appearance is retained as the basis of the output. |
-| `subject_mask` | MASK, optional | A soft or binary mask identifying the region where local correction should be applied. Useful when the foreground subject should be corrected without applying dense local displacement everywhere. |
+  -----------------------------------------------------------------------
+  Input                   Type                    Description
+  ----------------------- ----------------------- -----------------------
+  `reference`             IMAGE                   The geometric
+                                                  reference. The source
+                                                  is aligned to this
+                                                  image's coordinate
+                                                  system.
+
+  `source`                IMAGE                   The image to transform.
+                                                  Its appearance is
+                                                  retained as the basis
+                                                  of the output.
+
+  `subject_mask`          MASK, optional          A soft or binary mask
+                                                  identifying the region
+                                                  where local correction
+                                                  should be applied.
+                                                  Useful when the
+                                                  foreground subject
+                                                  should be corrected
+                                                  without applying dense
+                                                  local displacement
+                                                  everywhere.
+  -----------------------------------------------------------------------
 
 The node expects ComfyUI image tensors. If the images have different
 dimensions, QAlign normalizes the working images to the reference
@@ -102,12 +122,34 @@ initial sizing.
 
 ### Outputs
 
-| Output | Type | Description |
-|---|---|---|
-| `aligned_image` | IMAGE | The transformed source image. |
-| `overlay_preview` | IMAGE | A 50/50 blend of the reference and aligned output when `diagnostic_overlay` is enabled; otherwise, a copy of the aligned output. |
-| `difference_preview` | IMAGE | A normalized grayscale absolute-difference visualization. It highlights pixel differences, not just geometric errors. |
-| `alignment_report` | STRING | A JSON report containing the selected method, estimated transform, settings, flow statistics, and diagnostic values. |
+  -----------------------------------------------------------------------
+  Output                  Type                    Description
+  ----------------------- ----------------------- -----------------------
+  `aligned_image`         IMAGE                   The transformed source
+                                                  image.
+
+  `overlay_preview`       IMAGE                   A 50/50 blend of the
+                                                  reference and aligned
+                                                  output when
+                                                  `diagnostic_overlay` is
+                                                  enabled; otherwise, a
+                                                  copy of the aligned
+                                                  output.
+
+  `difference_preview`    IMAGE                   A normalized grayscale
+                                                  absolute-difference
+                                                  visualization. It
+                                                  highlights pixel
+                                                  differences, not just
+                                                  geometric errors.
+
+  `alignment_report`      STRING                  A JSON report
+                                                  containing the selected
+                                                  method, estimated
+                                                  transform, settings,
+                                                  flow statistics, and
+                                                  diagnostic values.
+  -----------------------------------------------------------------------
 
 ## Alignment pipeline
 
@@ -191,7 +233,7 @@ universal probability that the alignment is correct.
 A 2 × 3 affine matrix represents the global transform. In simplified
 form:
 
-```text
+``` text
 x' = a*x + b*y + tx
 y' = c*x + d*y + ty
 ```
@@ -265,13 +307,41 @@ the global transform estimation.
 
 ## Alignment modes
 
-| Mode | Global behavior | Typical use |
-|---|---|---|
-| `Automatic` | ORB matching + ratio test + RANSAC; falls back to multi-scale ECC if the feature estimate is not sufficiently supported or fails configured limits. | General-purpose automatic estimation when images share enough recognizable structures. |
-| `Hybrid` | Phase-correlation translation seed followed by multi-scale ECC affine refinement. | A conventional global alignment path with translation initialization. |
-| `Translation` | Phase-correlation translation only; no rotation or scale correction. | Images that are already the same scale and orientation and differ mainly by offset. |
-| `Affine` | Phase-correlation initialization followed by multi-scale ECC affine refinement. | Manual control over the allowed affine scale/rotation limits; often useful for scale, rotation, or global drift. |
-| `Local only` | Skips global registration and starts local optical flow from the untransformed source after dimension normalization. | Only when global placement is already correct and residual differences are local. |
+  -----------------------------------------------------------------------
+  Mode                    Global behavior         Typical use
+  ----------------------- ----------------------- -----------------------
+  `Automatic`             ORB matching + ratio    General-purpose
+                          test + RANSAC; falls    automatic estimation
+                          back to multi-scale ECC when images share
+                          if the feature estimate enough recognizable
+                          is not sufficiently     structures.
+                          supported or fails      
+                          configured limits.      
+
+  `Hybrid`                Phase-correlation       A conventional global
+                          translation seed        alignment path with
+                          followed by multi-scale translation
+                          ECC affine refinement.  initialization.
+
+  `Translation`           Phase-correlation       Images that are already
+                          translation only; no    the same scale and
+                          rotation or scale       orientation and differ
+                          correction.             mainly by offset.
+
+  `Affine`                Phase-correlation       Manual control over the
+                          initialization followed allowed affine
+                          by multi-scale ECC      scale/rotation limits;
+                          affine refinement.      often useful for scale,
+                                                  rotation, or global
+                                                  drift.
+
+  `Local only`            Skips global            Only when global
+                          registration and starts placement is already
+                          local optical flow from correct and residual
+                          the untransformed       differences are local.
+                          source after dimension  
+                          normalization.          
+  -----------------------------------------------------------------------
 
 In `Automatic`, the report's `automatic_estimate_source` indicates
 whether feature RANSAC or the ECC fallback supplied the global estimate.
@@ -284,17 +354,102 @@ are not recommended defaults.
 
 ### Global alignment
 
-| Parameter | Default | UI range | Meaning and guidance |
-|---|---:|---|---|
-| `alignment_mode` | `Affine` | `Automatic`, `Hybrid`, `Translation`, `Affine`, `Local only` | Chooses the global estimation path. Start with `Automatic` to estimate from feature correspondences; use `Affine` or `Translation` to test a more constrained path. |
-| `max_global_shift` | 256 px | 1–4096 px | Maximum absolute X/Y translation accepted by the estimator. Raise it for larger framing offsets. This is a translation limit, not a scale limit. |
-| `pyramid_levels` | 4 | 1–6 | Number of coarse-to-fine resolution levels requested for ECC. More levels can help with larger drift, but add computation and do not guarantee a better solution. Very small images may use fewer distinct levels. |
-| `ecc_iterations` | 100 | 10–500 | Maximum ECC optimization iterations at each pyramid level. More iterations allow more optimization work but can increase runtime and do not fix incorrect correspondences. |
-| `max_scale_deviation` | 0.12 | 0.01–1.0 | Allowed deviation from unit scale for the global transform in `Full affine` mode and ECC validation. `0.12` allows roughly ±12% scale deviation. |
-| `max_rotation_degrees` | 12° | 1–90° | Maximum absolute rotation accepted by the global estimator. Increase only when large rotation is plausible. |
-| `scale_mode` | `Anisotropic X/Y` | `Full affine`, `Anisotropic X/Y` | `Anisotropic X/Y` retains separate horizontal and vertical scales while suppressing shear; `Full affine` allows the full affine linear component. |
-| `max_scale_deviation_x` | 0.08 | 0.005–1.0 | Allowed horizontal scale deviation from 1.0 in `Anisotropic X/Y` mode. `0.08` allows approximately `0.92–1.08`. |
-| `max_scale_deviation_y` | 0.08 | 0.005–1.0 | Allowed vertical scale deviation from 1.0 in `Anisotropic X/Y` mode. `0.08` allows approximately `0.92–1.08`. |
+  ---------------------------------------------------------------------------------------
+  Parameter                              Default             UI range Meaning and
+                                                                      guidance
+  ------------------------- -------------------- -------------------- -------------------
+  `alignment_mode`                      `Affine`         `Automatic`, Chooses the global
+                                                            `Hybrid`, estimation path.
+                                                       `Translation`, Start with
+                                                            `Affine`, `Automatic` to
+                                                         `Local only` estimate from
+                                                                      feature
+                                                                      correspondences;
+                                                                      use `Affine` or
+                                                                      `Translation` to
+                                                                      test a more
+                                                                      constrained path.
+
+  `max_global_shift`                      256 px           1--4096 px Maximum absolute
+                                                                      X/Y translation
+                                                                      accepted by the
+                                                                      estimator. Raise it
+                                                                      for larger framing
+                                                                      offsets. This is a
+                                                                      translation limit,
+                                                                      not a scale limit.
+
+  `pyramid_levels`                             4                 1--6 Number of
+                                                                      coarse-to-fine
+                                                                      resolution levels
+                                                                      requested for ECC.
+                                                                      More levels can
+                                                                      help with larger
+                                                                      drift, but add
+                                                                      computation and do
+                                                                      not guarantee a
+                                                                      better solution.
+                                                                      Very small images
+                                                                      may use fewer
+                                                                      distinct levels.
+
+  `ecc_iterations`                           100              10--500 Maximum ECC
+                                                                      optimization
+                                                                      iterations at each
+                                                                      pyramid level. More
+                                                                      iterations allow
+                                                                      more optimization
+                                                                      work but can
+                                                                      increase runtime
+                                                                      and do not fix
+                                                                      incorrect
+                                                                      correspondences.
+
+  `max_scale_deviation`                     0.12            0.01--1.0 Allowed deviation
+                                                                      from unit scale for
+                                                                      the global
+                                                                      transform in
+                                                                      `Full affine` mode
+                                                                      and ECC validation.
+                                                                      `0.12` allows
+                                                                      roughly ±12% scale
+                                                                      deviation.
+
+  `max_rotation_degrees`                     12°               1--90° Maximum absolute
+                                                                      rotation accepted
+                                                                      by the global
+                                                                      estimator. Increase
+                                                                      only when large
+                                                                      rotation is
+                                                                      plausible.
+
+  `scale_mode`                 `Anisotropic X/Y`       `Full affine`, `Anisotropic X/Y`
+                                                    `Anisotropic X/Y` retains separate
+                                                                      horizontal and
+                                                                      vertical scales
+                                                                      while suppressing
+                                                                      shear;
+                                                                      `Full affine`
+                                                                      allows the full
+                                                                      affine linear
+                                                                      component.
+
+  `max_scale_deviation_x`                   0.08           0.005--1.0 Allowed horizontal
+                                                                      scale deviation
+                                                                      from 1.0 in
+                                                                      `Anisotropic X/Y`
+                                                                      mode. `0.08` allows
+                                                                      approximately
+                                                                      0.92--1.08.
+
+  `max_scale_deviation_y`                   0.08           0.005--1.0 Allowed vertical
+                                                                      scale deviation
+                                                                      from 1.0 in
+                                                                      `Anisotropic X/Y`
+                                                                      mode. `0.08` allows
+                                                                      approximately
+                                                                      0.92--1.08.
+  ---------------------------------------------------------------------------------------
 
 The v0.5.0 interface permits larger manual adjustment ranges than
 earlier releases: translation up to 4096 pixels, scale-deviation limits
@@ -304,14 +459,63 @@ valid but visually incorrect transformation.
 
 ### Local correction
 
-| Parameter | Default | UI range | Meaning and guidance |
-|---|---:|---|---|
-| `local_correction` | `true` | Boolean | Enables or disables dense Farneback optical-flow refinement after global alignment. Disable it to inspect the global transform alone. |
-| `correction_strength` | 100% | 0–100%, step 5 | Scales the estimated local displacement field. `0` applies no local correction; `100` applies the full bounded field. Reduce it when local warping damages details. |
-| `max_local_flow` | 16 px | 0–256 px | Maximum magnitude of the smoothed local displacement before strength scaling. Raise it only when residual local displacement is real and supported by shared image structure. |
-| `flow_smoothing` | 81 px | 3–301 px, odd values | Gaussian kernel size for smoothing the horizontal and vertical flow fields. Larger kernels produce smoother, broader corrections; smaller kernels allow more localized variation but can create distortion. |
-| `protect_background` | `false` | Boolean | Uses a detail/edge heuristic to suppress local flow in some low-detail regions. It is not semantic segmentation. |
-| `subject_mask` | None | Optional MASK input | If connected, gates local flow by the mask and retains the globally aligned source outside the mask. This takes precedence over the heuristic background-protection mask for flow gating. |
+  -----------------------------------------------------------------------------------------
+  Parameter                            Default             UI range Meaning and guidance
+  ----------------------- -------------------- -------------------- -----------------------
+  `local_correction`                    `true`              Boolean Enables or disables
+                                                                    dense Farneback
+                                                                    optical-flow refinement
+                                                                    after global alignment.
+                                                                    Disable it to inspect
+                                                                    the global transform
+                                                                    alone.
+
+  `correction_strength`                   100%      0--100%, step 5 Scales the estimated
+                                                                    local displacement
+                                                                    field. `0` applies no
+                                                                    local correction; `100`
+                                                                    applies the full
+                                                                    bounded field. Reduce
+                                                                    it when local warping
+                                                                    damages details.
+
+  `max_local_flow`                       16 px            0--256 px Maximum magnitude of
+                                                                    the smoothed local
+                                                                    displacement before
+                                                                    strength scaling. Raise
+                                                                    it only when residual
+                                                                    local displacement is
+                                                                    real and supported by
+                                                                    shared image structure.
+
+  `flow_smoothing`                       81 px       3--301 px, odd Gaussian kernel size
+                                                             values for smoothing the
+                                                                    horizontal and vertical
+                                                                    flow fields. Larger
+                                                                    kernels produce
+                                                                    smoother, broader
+                                                                    corrections; smaller
+                                                                    kernels allow more
+                                                                    localized variation but
+                                                                    can create distortion.
+
+  `protect_background`                 `false`              Boolean Uses a detail/edge
+                                                                    heuristic to suppress
+                                                                    local flow in some
+                                                                    low-detail regions. It
+                                                                    is not semantic
+                                                                    segmentation.
+
+  `subject_mask`                          None  Optional MASK input If connected, gates
+                                                                    local flow by the mask
+                                                                    and retains the
+                                                                    globally aligned source
+                                                                    outside the mask. This
+                                                                    takes precedence over
+                                                                    the heuristic
+                                                                    background-protection
+                                                                    mask for flow gating.
+  -----------------------------------------------------------------------------------------
 
 `max_local_flow` and `correction_strength` interact. A 20-pixel flow
 limit at 50% strength produces a maximum applied magnitude of
@@ -320,10 +524,30 @@ displacement varies spatially.
 
 ### Output and sizing
 
-| Parameter | Default | Meaning |
-|---|---|---|
-| `preserve_source_size` | `false` | When disabled, the source is resized to the reference dimensions before alignment and output dimensions follow the reference. When enabled, the reference is resized to the source dimensions for processing, preserving source output dimensions. |
-| `diagnostic_overlay` | `true` | Enables the 50/50 reference/output overlay. If disabled, `overlay_preview` returns the aligned output instead. |
+  ------------------------------------------------------------------------
+  Parameter                Default                 Meaning
+  ------------------------ ----------------------- -----------------------
+  `preserve_source_size`   `false`                 When disabled, the
+                                                   source is resized to
+                                                   the reference
+                                                   dimensions before
+                                                   alignment and output
+                                                   dimensions follow the
+                                                   reference. When
+                                                   enabled, the reference
+                                                   is resized to the
+                                                   source dimensions for
+                                                   processing, preserving
+                                                   source output
+                                                   dimensions.
+
+  `diagnostic_overlay`     `true`                  Enables the 50/50
+                                                   reference/output
+                                                   overlay. If disabled,
+                                                   `overlay_preview`
+                                                   returns the aligned
+                                                   output instead.
+  ------------------------------------------------------------------------
 
 QAlign is an image-space alignment node. If aspect ratio, crop, or
 dimensions differ, upstream resizing may itself change geometry. For
